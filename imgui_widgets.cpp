@@ -5991,7 +5991,9 @@ void ImGui::MultiSelectItemFooter(ImGuiID id, bool* p_selected, bool* p_pressed)
     bool hovered = IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup);
     if (hovered && IsMouseClicked(1))
     {
-        SetFocusID(window->DC.LastItemId, window);
+        if (g.ActiveId != 0 && g.ActiveId != id)
+            ClearActiveID();
+        SetFocusID(id, window);
         if (!pressed && !selected)
         {
             pressed = true;

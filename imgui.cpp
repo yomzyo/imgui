@@ -10253,7 +10253,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
             else if (rect_type == TRT_ColumnsRect)                  { ImGuiTableColumn* c = &table->Columns[n]; return ImRect(c->MinX, table->InnerClipRect.Min.y, c->MaxX, table->InnerClipRect.Min.y + table->LastOuterHeight); }
             else if (rect_type == TRT_ColumnsClipRect)              { ImGuiTableColumn* c = &table->Columns[n]; return c->ClipRect; }
             else if (rect_type == TRT_ColumnsContentHeadersUsed)    { ImGuiTableColumn* c = &table->Columns[n]; return ImRect(c->MinX, table->InnerClipRect.Min.y, c->MinX + c->ContentWidthHeadersUsed, table->InnerClipRect.Min.y + table->LastFirstRowHeight); }    // Note: y1/y2 not always accurate
-            else if (rect_type == TRT_ColumnsContentHeadersDesired) { ImGuiTableColumn* c = &table->Columns[n]; return ImRect(c->MinX, table->InnerClipRect.Min.y, c->MinX + c->ContentWidthHeadersDesired, table->InnerClipRect.Min.y + table->LastFirstRowHeight); } // "
+            else if (rect_type == TRT_ColumnsContentHeadersIdeal)   { ImGuiTableColumn* c = &table->Columns[n]; return ImRect(c->MinX, table->InnerClipRect.Min.y, c->MinX + c->ContentWidthHeadersIdeal, table->InnerClipRect.Min.y + table->LastFirstRowHeight); } // "
             else if (rect_type == TRT_ColumnsContentRowsFrozen)     { ImGuiTableColumn* c = &table->Columns[n]; return ImRect(c->MinX, table->InnerClipRect.Min.y, c->MinX + c->ContentWidthRowsFrozen, table->InnerClipRect.Min.y + table->LastFirstRowHeight); }     // "
             else if (rect_type == TRT_ColumnsContentRowsUnfrozen)   { ImGuiTableColumn* c = &table->Columns[n]; return ImRect(c->MinX, table->InnerClipRect.Min.y + table->LastFirstRowHeight, c->MinX + c->ContentWidthRowsUnfrozen, table->InnerClipRect.Max.y); }   // "
             IM_ASSERT(0);
@@ -10513,7 +10513,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
             {
                 ImGuiTableColumnSettings* column_settings = &settings->GetColumnSettings()[n];
                 ImGuiSortDirection sort_dir = (column_settings->SortOrder != -1) ? (ImGuiSortDirection)column_settings->SortDirection : ImGuiSortDirection_None;
-                ImGui::BulletText("Column %d Order %d SortOrder %d %s Visible %d UserID 0x%08X WidthOrWeight %.3f",
+                ImGui::BulletText("Column %d Order %d SortOrder %2d %s Visible %d UserID 0x%08X WidthOrWeight %.3f",
                     n, column_settings->DisplayOrder, column_settings->SortOrder,
                     (sort_dir == ImGuiSortDirection_Ascending) ? "Asc" : (sort_dir == ImGuiSortDirection_Descending) ? "Des" : "---",
                     column_settings->Visible, column_settings->UserID, column_settings->WidthOrWeight);
@@ -10521,7 +10521,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
             ImGui::TreePop();
         }
 
-        static void NodeTable(ImGuiTable* table)
+        static void NodeTable(const ImGuiTable* table)
         {
             char buf[256];
             char* p = buf;
@@ -10532,20 +10532,21 @@ void ImGui::ShowMetricsWindow(bool* p_open)
                 ImGui::GetForegroundDrawList()->AddRect(table->OuterRect.Min, table->OuterRect.Max, IM_COL32(255, 255, 0, 255));
             if (open)
             {
+                ImGui::BulletText("OuterWidth: %.1f, InnerWidth: %.1f%s, IdealWidth: %.1f", table->OuterRect.GetWidth(), table->InnerWidth, table->InnerWidth == 0.0f ? " (auto)" : "", table->IdealTotalWidth);
                 for (int n = 0; n < table->ColumnsCount; n++)
                 {
-                    ImGuiTableColumn* column = &table->Columns[n];
+                    const ImGuiTableColumn* column = &table->Columns[n];
                     const char* name = TableGetColumnName(table, n);
                     ImGui::BulletText("Column %d order %d name '%s': +%.1f to +%.1f\n"
                         "Active: %d, Clipped: %d, DrawChannels: %d,%d\n"
                         "WidthGiven/Requested: %.1f/%.1f, Weight: %.2f\n"
-                        "ContentWidth: RowsFrozen %d, RowsUnfrozen %d, HeadersUsed/Desired %d/%d\n"
+                        "ContentWidth: RowsFrozen %d, RowsUnfrozen %d, HeadersUsed/Ideal %d/%d\n"
                         "SortOrder: %d, SortDir: %s\n"
                         "UserID: 0x%08X, Flags: 0x%04X: %s%s%s%s..",
                         n, column->DisplayOrder, name ? name : "NULL", column->MinX - table->WorkRect.Min.x, column->MaxX - table->WorkRect.Min.x,
                         column->IsActive, column->IsClipped, column->DrawChannelRowsBeforeFreeze, column->DrawChannelRowsAfterFreeze,
                         column->WidthGiven, column->WidthRequested, column->ResizeWeight,
-                        column->ContentWidthRowsFrozen, column->ContentWidthRowsUnfrozen, column->ContentWidthHeadersUsed, column->ContentWidthHeadersDesired,
+                        column->ContentWidthRowsFrozen, column->ContentWidthRowsUnfrozen, column->ContentWidthHeadersUsed, column->ContentWidthHeadersIdeal,
                         column->SortOrder, (column->SortDirection == ImGuiSortDirection_Ascending) ? "Ascending" : (column->SortDirection == ImGuiSortDirection_Descending) ? "Descending" : "None",
                         column->UserID, column->Flags,
                         (column->Flags & ImGuiTableColumnFlags_WidthFixed) ? "WidthFixed " : "",
@@ -10595,7 +10596,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
             for (int table_n = 0; table_n < g.Tables.GetSize(); table_n++)
             {
                 ImGuiTable* table = g.Tables.GetByIndex(table_n);
-                if (table->LastFrameActive < g.FrameCount - 1 || table->OuterWindow != g.NavWindow)
+                if (table->LastFrameActive < g.FrameCount - 1 || (table->OuterWindow != g.NavWindow && table->InnerWindow != g.NavWindow))
                     continue;
 
                 ImGui::BulletText("Table 0x%08X (%d columns, in '%s')", table->ID, table->ColumnsCount, table->OuterWindow->Name);

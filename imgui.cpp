@@ -10531,13 +10531,13 @@ void ImGui::ShowMetricsWindow(bool* p_open)
                     const char* name = TableGetColumnName(table, n);
                     ImGui::BulletText("Column %d order %d name '%s': +%.1f to +%.1f\n"
                         "Visible: %d, Clipped: %d, DrawChannels: %d,%d\n"
-                        "WidthGiven/Requested: %.1f/%.1f, Weight: %.2f\n"
+                        "WidthGiven/Request: %.1f/%.1f, WidthWeight: %.3f\n"
                         "ContentWidth: RowsFrozen %d, RowsUnfrozen %d, HeadersUsed/Ideal %d/%d\n"
                         "SortOrder: %d, SortDir: %s\n"
                         "UserID: 0x%08X, Flags: 0x%04X: %s%s%s%s..",
                         n, column->DisplayOrder, name ? name : "NULL", column->MinX - table->WorkRect.Min.x, column->MaxX - table->WorkRect.Min.x,
                         column->IsVisible, column->IsClipped, column->DrawChannelRowsBeforeFreeze, column->DrawChannelRowsAfterFreeze,
-                        column->WidthGiven, column->WidthRequested, column->ResizeWeight,
+                        column->WidthGiven, column->WidthRequest, column->WidthStretchWeight,
                         column->ContentWidthRowsFrozen, column->ContentWidthRowsUnfrozen, column->ContentWidthHeadersUsed, column->ContentWidthHeadersIdeal,
                         column->SortOrder, (column->SortDirection == ImGuiSortDirection_Ascending) ? "Ascending" : (column->SortDirection == ImGuiSortDirection_Descending) ? "Descending" : "None",
                         column->UserID, column->Flags,

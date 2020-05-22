@@ -10508,7 +10508,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
                 ImGui::BulletText("Column %d Order %d SortOrder %2d %s Visible %d UserID 0x%08X WidthOrWeight %.3f",
                     n, column_settings->DisplayOrder, column_settings->SortOrder,
                     (sort_dir == ImGuiSortDirection_Ascending) ? "Asc" : (sort_dir == ImGuiSortDirection_Descending) ? "Des" : "---",
-                    column_settings->Visible, column_settings->UserID, column_settings->WidthOrWeight);
+                    column_settings->IsVisible, column_settings->UserID, column_settings->WidthOrWeight);
             }
             ImGui::TreePop();
         }

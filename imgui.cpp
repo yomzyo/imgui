@@ -10531,7 +10531,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
                     const char* name = TableGetColumnName(table, n);
                     ImGui::BulletText("Column %d order %d name '%s': +%.1f to +%.1f\n"
                         "Visible: %d, Clipped: %d, DrawChannels: %d,%d\n"
-                        "WidthGiven/Request: %.1f/%.1f, WidthWeight: %.3f\n"
+                        "WidthGiven/Request: %.2f/%.2f, WidthWeight: %.3f\n"
                         "ContentWidth: RowsFrozen %d, RowsUnfrozen %d, HeadersUsed/Ideal %d/%d\n"
                         "SortOrder: %d, SortDir: %s\n"
                         "UserID: 0x%08X, Flags: 0x%04X: %s%s%s%s..",

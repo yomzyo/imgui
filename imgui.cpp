@@ -4004,7 +4004,7 @@ void ImGui::Initialize(ImGuiContext* context)
 
 #ifdef IMGUI_HAS_TABLE
     // Add .ini handle for ImGuiTable type
-    TableInstallSettingsHandler(context);
+    TableSettingsInstallHandler(context);
 #endif // #ifdef IMGUI_HAS_TABLE
 
 #ifdef IMGUI_HAS_DOCK
@@ -10513,7 +10513,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
             ImGui::TreePop();
         }
 
-        static void NodeTable(const ImGuiTable* table)
+        static void NodeTable(ImGuiTable* table)
         {
             char buf[256];
             char* p = buf;
